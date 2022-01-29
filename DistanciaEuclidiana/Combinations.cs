@@ -2,7 +2,6 @@
 {
     public class Combinations
     {
-        public Combinations() { }
         public Combinations(string name, double distance)
         {
             Name = name;

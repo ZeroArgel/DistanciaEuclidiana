@@ -1,54 +1,44 @@
 ﻿namespace DistanciaEuclidiana
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main()
         {
-            var points = NewPoints();// Get new points.
-            foreach(var point in points)
+            var points = NewPoints().ToList();// Get new points.
+            var combinations = GetResult(points).ToList();
+            $"Points mapped: {combinations.Count}".Show();
+            foreach (var point in points)
             {
-                Console.WriteLine($"{point.PointName}({point.X}, {point.Y})");
+                $"{point.PointName}({point.X}, {point.Y})".Show();
             }
-            var combinations = GetResult(points);
-            Console.WriteLine($"Combination able to: {combinations.Count()}");
-            foreach(var combination in combinations)
+            $"\nCombination able to: {combinations.Count}".Show();
+            foreach (var combination in combinations)
             {
-                Console.WriteLine($"D{combination.Name}: {combination.Distance}");
+                $"D{combination.Name}: {combination.Distance}".Show();
             }
-            Console.WriteLine($"Sum all distances: {combinations.Sum(x => x.Distance)}");
+            $"\nSum all distances: {combinations.Sum(x => x.Distance)}".Show();
         }
-        public static IEnumerable<Combinations> GetResult(IEnumerable<Points> points)
+        public static IEnumerable<Combinations> GetResult(List<Points> points)
         {
             var results = new List<Combinations>();
-            var noCombinations = points.Count().ToCombinations(1);
-            var initPosition = 0;
-            while (true)
+            foreach (var pointCurrent in points)
             {
-                if (initPosition == points.Count()) break;
-
-                var elementToJoin = points.ElementAt(initPosition);
-                foreach (var element in points)
+                foreach (var point in points)
                 {
-                    var name = string.Concat(elementToJoin.PointName, element.PointName);
-                    if (element.PointName != elementToJoin.PointName && 
-                        !results.Any(x => x.Name.ToCheckString(name)))
-                    {   
-                        var distance = EuclideanDistance(elementToJoin, element);
-                        results.Add(new Combinations(name, distance));
-                    }   
+                    var name = string.Concat(pointCurrent.PointName, point.PointName);
+                    if (point.PointName == pointCurrent.PointName || results.Any(x => x.Name.ToUpper().Equals(name.ToUpper()))) 
+                        continue;
+                    
+                    results.Add(new Combinations(name, pointCurrent.GetEuclideanDistance(point)));
                 }
-                initPosition++;
             }
             return results;
         }
-        // formula: d = R[(x2-x1)^2 + (y2-y1)^2] where R is square root
-        private static double EuclideanDistance(Points point1, Points point2) =>
-            Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
+
         private static IEnumerable<Points> NewPoints() =>
-            new List<Points>()
+            new List<Points>
             {
                 new Points('A', -3, 1),
                 new Points('B', 1, -2)
