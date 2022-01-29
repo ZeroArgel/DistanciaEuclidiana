@@ -2,7 +2,6 @@
 {
     public class Points
     {
-        public Points() { }
         public Points(char pointName, double x, double y)
         {
             PointName = pointName;
